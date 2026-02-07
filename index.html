@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Student Registration - Export Data</title>
     <style>
         * {
@@ -10,6 +10,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -18,7 +19,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
             transition: all 0.8s ease;
         }
 
@@ -34,15 +35,18 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
             overflow: hidden;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
             background: linear-gradient(90deg, #2c3e50, #3498db);
             color: white;
-            padding: 30px;
+            padding: 25px 20px;
             text-align: center;
             position: relative;
             overflow: hidden;
+            flex-shrink: 0;
         }
 
         .header::before {
@@ -57,56 +61,65 @@
         }
 
         .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
+            font-size: 24px;
+            margin-bottom: 8px;
             position: relative;
             z-index: 1;
         }
 
         .header p {
             opacity: 0.9;
-            font-size: 16px;
+            font-size: 14px;
             position: relative;
             z-index: 1;
         }
 
         .form-container {
-            padding: 40px;
-            min-height: 450px;
             position: relative;
+            display: grid;
+            grid-template-columns: 100%;
+            min-height: 400px;
+            overflow: hidden;
         }
 
         .form-field {
-            position: absolute;
-            width: calc(100% - 80px);
+            grid-column: 1;
+            grid-row: 1;
+            width: 100%;
+            padding: 30px;
             opacity: 0;
             transform: translateX(100px);
             transition: all 0.5s ease;
-            display: none;
+            visibility: hidden;
+            pointer-events: none;
+            align-self: start;
         }
 
         .form-field.active {
             opacity: 1;
             transform: translateX(0);
-            display: block;
+            visibility: visible;
+            pointer-events: auto;
+            z-index: 2;
         }
 
         .form-field.exiting {
             opacity: 0;
             transform: translateX(-100px);
+            visibility: visible;
         }
 
         .field-header {
             display: flex;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 2px solid #f0f0f0;
         }
 
         .field-number {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             background: linear-gradient(135deg, #3498db, #2c3e50);
             color: white;
@@ -114,41 +127,43 @@
             justify-content: center;
             align-items: center;
             font-weight: bold;
-            font-size: 18px;
-            margin-right: 15px;
+            font-size: 16px;
+            margin-right: 12px;
             box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+            flex-shrink: 0;
         }
 
         .field-title {
-            font-size: 22px;
+            font-size: 20px;
             color: #2c3e50;
             font-weight: 600;
+            line-height: 1.2;
         }
 
         .field-subtitle {
             color: #7f8c8d;
-            font-size: 14px;
-            margin-top: 5px;
+            font-size: 13px;
+            margin-top: 4px;
         }
 
         .input-group {
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: 600;
             color: #2c3e50;
-            font-size: 16px;
+            font-size: 15px;
         }
 
         input {
             width: 100%;
-            padding: 16px 20px;
+            padding: 14px 18px;
             border: 2px solid #e0e0e0;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 16px; /* Prevents iOS zoom */
             transition: all 0.3s;
             background-color: #f9f9f9;
         }
@@ -163,12 +178,12 @@
         .options-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 12px;
             margin-top: 15px;
         }
 
         .option {
-            padding: 18px 15px;
+            padding: 15px 10px;
             border-radius: 12px;
             background-color: #f8f9fa;
             border: 2px solid #e0e0e0;
@@ -180,7 +195,7 @@
         .option:hover {
             background-color: #e3f2fd;
             border-color: #3498db;
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
         .option.selected {
@@ -192,24 +207,24 @@
         .option-name {
             font-weight: 600;
             color: #2c3e50;
-            margin-bottom: 5px;
-            font-size: 16px;
+            margin-bottom: 4px;
+            font-size: 15px;
         }
 
         .option-code {
             color: #666;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .year-options {
             display: grid;
-            grid-template-columns: repeat(2, 2fr);
-            gap: 15px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
             margin-top: 15px;
         }
 
         .year-option {
-            padding: 20px 10px;
+            padding: 15px 10px;
             border-radius: 12px;
             background-color: #f8f9fa;
             border: 2px solid #e0e0e0;
@@ -221,7 +236,7 @@
         .year-option:hover {
             background-color: #e3f2fd;
             border-color: #3498db;
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
         .year-option.selected {
@@ -231,26 +246,26 @@
         }
 
         .year-number {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
             color: #2c3e50;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .year-text {
             color: #666;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .accommodation-options {
             display: flex;
-            gap: 15px;
+            flex-direction: column;
+            gap: 12px;
             margin-top: 15px;
         }
 
         .accommodation-option {
-            flex: 1;
-            padding: 20px;
+            padding: 18px;
             border-radius: 12px;
             background-color: #f8f9fa;
             border: 2px solid #e0e0e0;
@@ -262,7 +277,7 @@
         .accommodation-option:hover {
             background-color: #e3f2fd;
             border-color: #3498db;
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
         .accommodation-option.selected {
@@ -274,24 +289,25 @@
         .accommodation-name {
             font-weight: 600;
             color: #2c3e50;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             font-size: 16px;
         }
 
         .accommodation-desc {
             color: #666;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .button-container {
             display: flex;
             justify-content: space-between;
-            margin-top: 40px;
+            margin-top: 30px;
+            gap: 10px;
         }
 
         .form-btn {
-            padding: 15px 30px;
-            font-size: 16px;
+            padding: 14px 20px;
+            font-size: 15px;
             font-weight: 600;
             border-radius: 10px;
             cursor: pointer;
@@ -299,7 +315,9 @@
             border: none;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            gap: 8px;
+            flex: 1;
         }
 
         .btn-prev {
@@ -308,6 +326,7 @@
             border: 2px solid #3498db;
             opacity: 0;
             visibility: hidden;
+            max-width: 120px;
         }
 
         .btn-prev.show {
@@ -327,7 +346,7 @@
 
         .btn-next:hover {
             background: linear-gradient(90deg, #2980b9, #1c6ea4);
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
         }
 
@@ -339,15 +358,15 @@
 
         .btn-submit:hover {
             background: linear-gradient(90deg, #27ae60, #219653);
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(46, 204, 113, 0.4);
         }
 
         .footer {
             text-align: center;
-            padding: 25px;
+            padding: 20px;
             color: #666;
-            font-size: 14px;
+            font-size: 13px;
             border-top: 1px solid #eee;
             background-color: #f8f9fa;
         }
@@ -358,7 +377,7 @@
             left: 50%;
             transform: translate(-50%, -50%) scale(0.8);
             background: white;
-            padding: 40px;
+            padding: 30px;
             border-radius: 25px;
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
             z-index: 1000;
@@ -367,6 +386,8 @@
             animation: popUp 0.6s forwards;
             max-width: 550px;
             width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         @keyframes popUp {
@@ -377,62 +398,67 @@
 
         .thank-you-message h2 {
             color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 28px;
+            margin-bottom: 15px;
+            font-size: 24px;
         }
 
         .thank-you-message p {
             color: #666;
-            margin-bottom: 20px;
-            font-size: 16px;
-            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 15px;
+            line-height: 1.5;
         }
 
         .details-card {
             background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            padding: 20px;
+            padding: 15px;
             border-radius: 15px;
             text-align: left;
-            margin: 20px 0;
+            margin: 15px 0;
             border-left: 5px solid #3498db;
         }
 
         .details-card h3 {
             color: #3498db;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            font-size: 18px;
         }
 
         .detail-row {
             display: flex;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
             border-bottom: 1px dashed #ddd;
+            font-size: 14px;
         }
 
         .detail-label {
             font-weight: 600;
             color: #2c3e50;
-            width: 160px;
+            width: 120px;
+            flex-shrink: 0;
         }
 
         .detail-value {
             color: #555;
             flex: 1;
+            word-break: break-word;
         }
 
         .export-options {
             display: flex;
-            gap: 15px;
-            margin-top: 25px;
+            gap: 10px;
+            margin-top: 20px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .export-btn {
-            padding: 12px 25px;
-            font-size: 14px;
+            padding: 10px 20px;
+            font-size: 13px;
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
@@ -440,7 +466,10 @@
             border: none;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            flex: 1;
+            min-width: 120px;
+            justify-content: center;
         }
 
         .csv-btn {
@@ -459,7 +488,7 @@
         }
 
         .export-btn:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
@@ -467,18 +496,19 @@
             background: linear-gradient(90deg, #e74c3c, #c0392b);
             color: white;
             border: none;
-            padding: 12px 35px;
+            padding: 12px 30px;
             border-radius: 10px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             transition: all 0.3s;
             margin-top: 20px;
+            width: 100%;
         }
 
         .close-btn:hover {
             background: linear-gradient(90deg, #c0392b, #a93226);
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
         }
 
@@ -491,61 +521,19 @@
             background-color: rgba(0, 0, 0, 0.7);
             z-index: 999;
             display: none;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                max-width: 100%;
-            }
-
-            .form-container {
-                padding: 25px 20px;
-            }
-
-            .header {
-                padding: 25px 20px;
-            }
-
-            .header h1 {
-                font-size: 24px;
-            }
-
-            .options-container, .year-options {
-                grid-template-columns: 1fr;
-            }
-
-            .accommodation-options {
-                flex-direction: column;
-            }
-
-            .field-title {
-                font-size: 20px;
-            }
-
-            .detail-label {
-                width: 130px;
-                font-size: 14px;
-            }
-
-            .export-options {
-                flex-direction: column;
-            }
-
-            .thank-you-message {
-                padding: 30px 20px;
-            }
+            backdrop-filter: blur(3px);
         }
 
         .step-progress {
             display: flex;
             justify-content: center;
-            margin: 20px 0 30px;
+            margin: 15px 0 25px;
             gap: 8px;
         }
 
         .step-dot {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             background-color: #ddd;
             transition: all 0.3s;
@@ -563,43 +551,50 @@
         .field-counter {
             text-align: center;
             color: #7f8c8d;
-            font-size: 14px;
-            margin-top: 10px;
+            font-size: 13px;
+            margin-top: 15px;
             font-weight: 500;
         }
 
         .history-section {
-            margin-top: 30px;
+            margin-top: 20px;
             border-top: 2px solid #f0f0f0;
             padding-top: 20px;
             display: none;
         }
 
         .history-title {
-            font-size: 18px;
+            font-size: 16px;
             color: #2c3e50;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+        }
+
+        .history-table-container {
+            overflow-x: auto;
         }
 
         .history-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 5px;
+            font-size: 13px;
+            min-width: 500px;
         }
 
         .history-table th {
             background-color: #f8f9fa;
-            padding: 12px;
+            padding: 10px;
             text-align: left;
             border-bottom: 2px solid #3498db;
             color: #2c3e50;
+            white-space: nowrap;
         }
 
         .history-table td {
-            padding: 10px 12px;
+            padding: 8px 10px;
             border-bottom: 1px solid #eee;
         }
 
@@ -610,8 +605,83 @@
         .empty-history {
             text-align: center;
             color: #7f8c8d;
-            padding: 20px;
+            padding: 15px;
             font-style: italic;
+            font-size: 13px;
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                border-radius: 15px;
+            }
+
+            .header {
+                padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .form-field {
+                padding: 20px 15px;
+            }
+
+            .options-container, .year-options {
+                grid-template-columns: 1fr;
+            }
+
+            .accommodation-options {
+                flex-direction: column;
+            }
+
+            .field-title {
+                font-size: 18px;
+            }
+
+            .button-container {
+                flex-direction: row;
+            }
+
+            .form-btn {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+
+            .export-options {
+                flex-direction: column;
+            }
+
+            .thank-you-message {
+                padding: 20px;
+                width: 95%;
+            }
+        }
+
+        /* Landscape Mode Optimization */
+        @media (max-height: 600px) {
+            body {
+                align-items: flex-start;
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+
+            .form-container {
+                min-height: 300px;
+            }
+
+            .form-field {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 15px;
+            }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -642,10 +712,10 @@
 
                 <div class="button-container">
                     <button class="form-btn btn-prev" id="prevBtn1">
-                        <i class="fas fa-arrow-left"></i> Previous
+                        <i class="fas fa-arrow-left"></i> Back
                     </button>
                     <button class="form-btn btn-next" id="nextBtn1">
-                        Next: Department <i class="fas fa-arrow-right"></i>
+                        Next <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
@@ -691,10 +761,10 @@
 
                 <div class="button-container">
                     <button class="form-btn btn-prev show" id="prevBtn2">
-                        <i class="fas fa-arrow-left"></i> Previous
+                        <i class="fas fa-arrow-left"></i> Back
                     </button>
                     <button class="form-btn btn-next" id="nextBtn2">
-                        Next: Section <i class="fas fa-arrow-right"></i>
+                        Next <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
@@ -728,10 +798,10 @@
 
                 <div class="button-container">
                     <button class="form-btn btn-prev show" id="prevBtn3">
-                        <i class="fas fa-arrow-left"></i> Previous
+                        <i class="fas fa-arrow-left"></i> Back
                     </button>
                     <button class="form-btn btn-next" id="nextBtn3">
-                        Next: Year <i class="fas fa-arrow-right"></i>
+                        Next <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
@@ -769,10 +839,10 @@
 
                 <div class="button-container">
                     <button class="form-btn btn-prev show" id="prevBtn4">
-                        <i class="fas fa-arrow-left"></i> Previous
+                        <i class="fas fa-arrow-left"></i> Back
                     </button>
                     <button class="form-btn btn-next" id="nextBtn4">
-                        Next: Accommodation <i class="fas fa-arrow-right"></i>
+                        Next <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
@@ -802,10 +872,10 @@
 
                 <div class="button-container">
                     <button class="form-btn btn-prev show" id="prevBtn5">
-                        <i class="fas fa-arrow-left"></i> Previous
+                        <i class="fas fa-arrow-left"></i> Back
                     </button>
                     <button class="form-btn btn-next" id="nextBtn5">
-                        Next: Registration No. <i class="fas fa-arrow-right"></i>
+                        Next <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
@@ -828,10 +898,10 @@
 
                 <div class="button-container">
                     <button class="form-btn btn-prev show" id="prevBtn6">
-                        <i class="fas fa-arrow-left"></i> Previous
+                        <i class="fas fa-arrow-left"></i> Back
                     </button>
                     <button class="form-btn btn-submit" id="submitBtn">
-                        <i class="fas fa-paper-plane"></i> Submit Registration
+                        <i class="fas fa-paper-plane"></i> Submit
                     </button>
                 </div>
             </div>
@@ -851,20 +921,20 @@
             <div class="history-title">
                 <i class="fas fa-history"></i> Registration History
             </div>
-            <div id="historyContent">
+            <div id="historyContent" class="history-table-container">
                 <div class="empty-history">No registrations yet. Submit your first registration to see it here.</div>
             </div>
         </div>
 
         <div class="footer">
-            <p><i class="fas fa-university"></i> © 2023 University Registration Portal | Export data in CSV/JSON/TXT formats</p>
+            <p><i class="fas fa-university"></i> © 2023 University Registration Portal</p>
         </div>
     </div>
 
     <!-- Thank You Message Popup with Export Options -->
     <div class="overlay" id="overlay"></div>
     <div class="thank-you-message" id="thankYouMessage">
-        <i class="fas fa-check-circle" style="font-size: 70px; color: #27ae60; margin-bottom: 20px;"></i>
+        <i class="fas fa-check-circle" style="font-size: 60px; color: #27ae60; margin-bottom: 15px;"></i>
         <h2>Registration Complete!</h2>
         <p>Your registration has been saved successfully.</p>
 
@@ -874,17 +944,17 @@
 
         <div class="export-options">
             <button class="export-btn csv-btn" id="exportCSV">
-                <i class="fas fa-file-csv"></i> Download CSV
+                <i class="fas fa-file-csv"></i> CSV
             </button>
             <button class="export-btn json-btn" id="exportJSON">
-                <i class="fas fa-file-code"></i> Download JSON
+                <i class="fas fa-file-code"></i> JSON
             </button>
             <button class="export-btn txt-btn" id="exportTXT">
-                <i class="fas fa-file-alt"></i> Download TXT
+                <i class="fas fa-file-alt"></i> TXT
             </button>
         </div>
 
-        <p>Data exported to browser storage. You can access it later.</p>
+        <p style="margin-top: 15px; font-size: 12px;">Data exported to browser storage.</p>
         <button class="close-btn" id="closeBtn">
             <i class="fas fa-check"></i> Close & View History
         </button>
