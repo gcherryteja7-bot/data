@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration - Export Data</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: all 0.8s ease;
+        }
+
+        body.blue-bg {
+            background: linear-gradient(135deg, #1a2980, #26d0ce) !important;
+        }
+
+        .container {
+            background-color: white;
+            width: 100%;
+            max-width: 550px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-container {
+            padding: 40px;
+            min-height: 450px;
+            position: relative;
+        }
+
+        .form-field {
+            position: absolute;
+            width: calc(100% - 80px);
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.5s ease;
+            display: none;
+        }
+
+        .form-field.active {
+            opacity: 1;
+            transform: translateX(0);
+            display: block;
+        }
+
+        .form-field.exiting {
+            opacity: 0;
+            transform: translateX(-100px);
+        }
+
+        .field-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .field-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin-right: 15px;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .field-title {
+            font-size: 22px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .field-subtitle {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .input-group {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background-color: #f9f9f9;
+        }
+
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.2);
+            background-color: white;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .option {
+            padding: 18px 15px;
+            border-radius: 12px;
+            background-color: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .option:hover {
+            background-color: #e3f2fd;
+            border-color: #3498db;
+            transform: translateY(-3px);
+        }
+
+        .option.selected {
+            background-color: #d6ecff;
+            border-color: #3498db;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+        }
+
+        .option-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .option-code {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .year-options {
+            display: grid;
+            grid-template-columns: repeat(2, 2fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .year-option {
+            padding: 20px 10px;
+            border-radius: 12px;
+            background-color: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .year-option:hover {
+            background-color: #e3f2fd;
+            border-color: #3498db;
+            transform: translateY(-3px);
+        }
+
+        .year-option.selected {
+            background-color: #d6ecff;
+            border-color: #3498db;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+        }
+
+        .year-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .year-text {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .accommodation-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .accommodation-option {
+            flex: 1;
+            padding: 20px;
+            border-radius: 12px;
+            background-color: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .accommodation-option:hover {
+            background-color: #e3f2fd;
+            border-color: #3498db;
+            transform: translateY(-3px);
+        }
+
+        .accommodation-option.selected {
+            background-color: #d6ecff;
+            border-color: #3498db;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+        }
+
+        .accommodation-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .accommodation-desc {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        .form-btn {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-prev {
+            background-color: #f8f9fa;
+            color: #3498db;
+            border: 2px solid #3498db;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .btn-prev.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .btn-prev:hover {
+            background-color: #e3f2fd;
+        }
+
+        .btn-next {
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            color: white;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-next:hover {
+            background: linear-gradient(90deg, #2980b9, #1c6ea4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-submit {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            color: white;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(90deg, #27ae60, #219653);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.4);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+            background-color: #f8f9fa;
+        }
+
+        .thank-you-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: white;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            text-align: center;
+            display: none;
+            animation: popUp 0.6s forwards;
+            max-width: 550px;
+            width: 90%;
+        }
+
+        @keyframes popUp {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+            70% { transform: translate(-50%, -50%) scale(1.05); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .thank-you-message h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .thank-you-message p {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .details-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: left;
+            margin: 20px 0;
+            border-left: 5px solid #3498db;
+        }
+
+        .details-card h3 {
+            color: #3498db;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #2c3e50;
+            width: 160px;
+        }
+
+        .detail-value {
+            color: #555;
+            flex: 1;
+        }
+
+        .export-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            justify-content: center;
+        }
+
+        .export-btn {
+            padding: 12px 25px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .csv-btn {
+            background: linear-gradient(90deg, #27ae60, #219653);
+            color: white;
+        }
+
+        .json-btn {
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .txt-btn {
+            background: linear-gradient(90deg, #9b59b6, #8e44ad);
+            color: white;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .close-btn {
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .close-btn:hover {
+            background: linear-gradient(90deg, #c0392b, #a93226);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                max-width: 100%;
+            }
+
+            .form-container {
+                padding: 25px 20px;
+            }
+
+            .header {
+                padding: 25px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .options-container, .year-options {
+                grid-template-columns: 1fr;
+            }
+
+            .accommodation-options {
+                flex-direction: column;
+            }
+
+            .field-title {
+                font-size: 20px;
+            }
+
+            .detail-label {
+                width: 130px;
+                font-size: 14px;
+            }
+
+            .export-options {
+                flex-direction: column;
+            }
+
+            .thank-you-message {
+                padding: 30px 20px;
+            }
+        }
+
+        .step-progress {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0 30px;
+            gap: 8px;
+        }
+
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #ddd;
+            transition: all 0.3s;
+        }
+
+        .step-dot.active {
+            background-color: #3498db;
+            transform: scale(1.3);
+        }
+
+        .step-dot.completed {
+            background-color: #2ecc71;
+        }
+
+        .field-counter {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .history-section {
+            margin-top: 30px;
+            border-top: 2px solid #f0f0f0;
+            padding-top: 20px;
+            display: none;
+        }
+
+        .history-title {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .history-table th {
+            background-color: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #3498db;
+            color: #2c3e50;
+        }
+
+        .history-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .history-table tr:hover {
+            background-color: #f5f9ff;
+        }
+
+        .empty-history {
+            text-align: center;
+            color: #7f8c8d;
+            padding: 20px;
+            font-style: italic;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container" id="mainContainer">
+        <div class="header">
+            <h1><i class="fas fa-user-graduate"></i> Student Registration</h1>
+            <p>Complete each field one by one | Data Export Available</p>
+        </div>
+
+        <div class="form-container">
+            <!-- Step 1: Name -->
+            <div class="form-field active" id="field1">
+                <div class="field-header">
+                    <div class="field-number">1</div>
+                    <div>
+                        <div class="field-title">Enter Your Name</div>
+                        <div class="field-subtitle">Start with your full name as per university records</div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <input type="text" id="name" placeholder="Type your full name here" autofocus>
+                </div>
+
+                <div class="field-counter">Step 1 of 6 - Name</div>
+
+                <div class="button-container">
+                    <button class="form-btn btn-prev" id="prevBtn1">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="form-btn btn-next" id="nextBtn1">
+                        Next: Department <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Department -->
+            <div class="form-field" id="field2">
+                <div class="field-header">
+                    <div class="field-number">2</div>
+                    <div>
+                        <div class="field-title">Select Department</div>
+                        <div class="field-subtitle">Choose your academic department</div>
+                    </div>
+                </div>
+
+                <div class="options-container">
+                    <div class="option" data-dept="aiml">
+                        <div class="option-name">AIML</div>
+                        <div class="option-code">AI & Machine Learning</div>
+                    </div>
+                    <div class="option" data-dept="aids">
+                        <div class="option-name">AIDS</div>
+                        <div class="option-code">AI & Data Science</div>
+                    </div>
+                    <div class="option" data-dept="cse-cyber">
+                        <div class="option-name">CSE Cyber</div>
+                        <div class="option-code">Cyber Security</div>
+                    </div>
+                    <div class="option" data-dept="ece">
+                        <div class="option-name">ECE</div>
+                        <div class="option-code">Electronics & Comm.</div>
+                    </div>
+                    <div class="option" data-dept="csbs">
+                        <div class="option-name">CSBS</div>
+                        <div class="option-code">CS & Business Systems</div>
+                    </div>
+                    <div class="option" data-dept="eee">
+                        <div class="option-name">EEE</div>
+                        <div class="option-code">Electrical & Electronics</div>
+                    </div>
+                </div>
+
+                <div class="field-counter">Step 2 of 6 - Department</div>
+
+                <div class="button-container">
+                    <button class="form-btn btn-prev show" id="prevBtn2">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="form-btn btn-next" id="nextBtn2">
+                        Next: Section <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Section -->
+            <div class="form-field" id="field3">
+                <div class="field-header">
+                    <div class="field-number">3</div>
+                    <div>
+                        <div class="field-title">Select Your Section</div>
+                        <div class="field-subtitle">Choose your class section</div>
+                    </div>
+                </div>
+
+                <div class="options-container">
+                    <div class="option" data-section="A">
+                        <div class="option-name">Section A</div>
+                        <div class="option-code">Morning Session</div>
+                    </div>
+                    <div class="option" data-section="B">
+                        <div class="option-name">Section B</div>
+                        <div class="option-code">Afternoon Session</div>
+                    </div>
+                    <div class="option" data-section="C">
+                        <div class="option-name">Section C</div>
+                        <div class="option-code">Evening Session</div>
+                    </div>
+                </div>
+
+                <div class="field-counter">Step 3 of 6 - Section</div>
+
+                <div class="button-container">
+                    <button class="form-btn btn-prev show" id="prevBtn3">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="form-btn btn-next" id="nextBtn3">
+                        Next: Year <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 4: Year -->
+            <div class="form-field" id="field4">
+                <div class="field-header">
+                    <div class="field-number">4</div>
+                    <div>
+                        <div class="field-title">Select Your Year</div>
+                        <div class="field-subtitle">Choose your current year of study</div>
+                    </div>
+                </div>
+
+                <div class="year-options">
+                    <div class="year-option" data-year="1">
+                        <div class="year-number">1st</div>
+                        <div class="year-text">First Year</div>
+                    </div>
+                    <div class="year-option" data-year="2">
+                        <div class="year-number">2nd</div>
+                        <div class="year-text">Second Year</div>
+                    </div>
+                    <div class="year-option" data-year="3">
+                        <div class="year-number">3rd</div>
+                        <div class="year-text">Third Year</div>
+                    </div>
+                    <div class="year-option" data-year="4">
+                        <div class="year-number">4th</div>
+                        <div class="year-text">Fourth Year</div>
+                    </div>
+                </div>
+
+                <div class="field-counter">Step 4 of 6 - Year</div>
+
+                <div class="button-container">
+                    <button class="form-btn btn-prev show" id="prevBtn4">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="form-btn btn-next" id="nextBtn4">
+                        Next: Accommodation <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 5: Accommodation -->
+            <div class="form-field" id="field5">
+                <div class="field-header">
+                    <div class="field-number">5</div>
+                    <div>
+                        <div class="field-title">Accommodation Type</div>
+                        <div class="field-subtitle">Are you staying in hostel or commuting?</div>
+                    </div>
+                </div>
+
+                <div class="accommodation-options">
+                    <div class="accommodation-option" id="hostelOption">
+                        <div class="accommodation-name">Hostel Student</div>
+                        <div class="accommodation-desc">Living in campus accommodation</div>
+                    </div>
+                    <div class="accommodation-option" id="dayScholarOption">
+                        <div class="accommodation-name">Day Scholar</div>
+                        <div class="accommodation-desc">Commuting from home</div>
+                    </div>
+                </div>
+
+                <div class="field-counter">Step 5 of 6 - Accommodation</div>
+
+                <div class="button-container">
+                    <button class="form-btn btn-prev show" id="prevBtn5">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="form-btn btn-next" id="nextBtn5">
+                        Next: Registration No. <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 6: Registration Number -->
+            <div class="form-field" id="field6">
+                <div class="field-header">
+                    <div class="field-number">6</div>
+                    <div>
+                        <div class="field-title">Registration Number</div>
+                        <div class="field-subtitle">Enter your university registration number</div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <input type="text" id="regNo" placeholder="Enter your registration number">
+                </div>
+
+                <div class="field-counter">Step 6 of 6 - Registration Number</div>
+
+                <div class="button-container">
+                    <button class="form-btn btn-prev show" id="prevBtn6">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="form-btn btn-submit" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> Submit Registration
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-progress">
+            <div class="step-dot active" id="stepDot1"></div>
+            <div class="step-dot" id="stepDot2"></div>
+            <div class="step-dot" id="stepDot3"></div>
+            <div class="step-dot" id="stepDot4"></div>
+            <div class="step-dot" id="stepDot5"></div>
+            <div class="step-dot" id="stepDot6"></div>
+        </div>
+
+        <!-- History Section -->
+        <div class="history-section" id="historySection">
+            <div class="history-title">
+                <i class="fas fa-history"></i> Registration History
+            </div>
+            <div id="historyContent">
+                <div class="empty-history">No registrations yet. Submit your first registration to see it here.</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><i class="fas fa-university"></i> © 2023 University Registration Portal | Export data in CSV/JSON/TXT formats</p>
+        </div>
+    </div>
+
+    <!-- Thank You Message Popup with Export Options -->
+    <div class="overlay" id="overlay"></div>
+    <div class="thank-you-message" id="thankYouMessage">
+        <i class="fas fa-check-circle" style="font-size: 70px; color: #27ae60; margin-bottom: 20px;"></i>
+        <h2>Registration Complete!</h2>
+        <p>Your registration has been saved successfully.</p>
+
+        <div class="details-card" id="finalDetails">
+            <!-- Final details will be inserted here -->
+        </div>
+
+        <div class="export-options">
+            <button class="export-btn csv-btn" id="exportCSV">
+                <i class="fas fa-file-csv"></i> Download CSV
+            </button>
+            <button class="export-btn json-btn" id="exportJSON">
+                <i class="fas fa-file-code"></i> Download JSON
+            </button>
+            <button class="export-btn txt-btn" id="exportTXT">
+                <i class="fas fa-file-alt"></i> Download TXT
+            </button>
+        </div>
+
+        <p>Data exported to browser storage. You can access it later.</p>
+        <button class="close-btn" id="closeBtn">
+            <i class="fas fa-check"></i> Close & View History
+        </button>
+    </div>
+
+    <script>
+        // Current field tracking
+        let currentField = 1;
+        const totalFields = 6;
+
+        // Form data object
+        const formData = {
+            name: "",
+            department: "",
+            section: "",
+            year: "",
+            accommodation: "hostel",
+            regNo: ""
+        };
+
+        // Store all registrations in localStorage
+        let allRegistrations = JSON.parse(localStorage.getItem('studentRegistrations') || '[]');
+
+        // Initialize with first field
+        updateProgressDots();
+        updateHistory();
+
+        // Field navigation functions
+        function showField(fieldNumber) {
+            // Exit current field with animation
+            const currentFieldElement = document.getElementById(`field${currentField}`);
+            currentFieldElement.classList.remove('active');
+            currentFieldElement.classList.add('exiting');
+
+            // Remove exiting class after animation
+            setTimeout(() => {
+                currentFieldElement.classList.remove('exiting');
+
+                // Show new field
+                const newFieldElement = document.getElementById(`field${fieldNumber}`);
+                newFieldElement.classList.add('active');
+
+                // Focus on input if there is one
+                const input = newFieldElement.querySelector('input');
+                if (input) {
+                    setTimeout(() => input.focus(), 300);
+                }
+
+                // Update current field
+                currentField = fieldNumber;
+
+                // Update progress dots
+                updateProgressDots();
+
+                // Show/hide previous button
+                updatePreviousButton();
+            }, 300);
+        }
+
+        function updateProgressDots() {
+            for (let i = 1; i <= totalFields; i++) {
+                const dot = document.getElementById(`stepDot${i}`);
+                if (i === currentField) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+
+                if (i < currentField) {
+                    dot.classList.add('completed');
+                } else {
+                    dot.classList.remove('completed');
+                }
+            }
+        }
+
+        function updatePreviousButton() {
+            // Hide previous button on first field
+            if (currentField === 1) {
+                document.getElementById(`prevBtn${currentField}`).classList.remove('show');
+            } else {
+                document.getElementById(`prevBtn${currentField}`).classList.add('show');
+            }
+        }
+
+        // Navigation event listeners
+        document.getElementById('nextBtn1').addEventListener('click', function() {
+            const name = document.getElementById('name').value.trim();
+            if (name === "") {
+                alert("Please enter your name");
+                document.getElementById('name').focus();
+                return;
+            }
+            formData.name = name;
+            showField(2);
+        });
+
+        document.getElementById('prevBtn2').addEventListener('click', function() {
+            showField(1);
+        });
+
+        document.getElementById('nextBtn2').addEventListener('click', function() {
+            if (formData.department === "") {
+                alert("Please select your department");
+                return;
+            }
+            showField(3);
+        });
+
+        document.getElementById('prevBtn3').addEventListener('click', function() {
+            showField(2);
+        });
+
+        document.getElementById('nextBtn3').addEventListener('click', function() {
+            if (formData.section === "") {
+                alert("Please select your section");
+                return;
+            }
+            showField(4);
+        });
+
+        document.getElementById('prevBtn4').addEventListener('click', function() {
+            showField(3);
+        });
+
+        document.getElementById('nextBtn4').addEventListener('click', function() {
+            if (formData.year === "") {
+                alert("Please select your year");
+                return;
+            }
+            showField(5);
+        });
+
+        document.getElementById('prevBtn5').addEventListener('click', function() {
+            showField(4);
+        });
+
+        document.getElementById('nextBtn5').addEventListener('click', function() {
+            if (formData.accommodation === "") {
+                alert("Please select accommodation type");
+                return;
+            }
+            showField(6);
+        });
+
+        document.getElementById('prevBtn6').addEventListener('click', function() {
+            showField(5);
+        });
+
+        // Department selection
+        document.querySelectorAll('.option[data-dept]').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all department options
+                document.querySelectorAll('.option[data-dept]').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+
+                // Add selected class to clicked option
+                this.classList.add('selected');
+
+                // Set department value
+                formData.department = this.getAttribute('data-dept');
+            });
+        });
+
+        // Section selection
+        document.querySelectorAll('.option[data-section]').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all section options
+                document.querySelectorAll('.option[data-section]').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+
+                // Add selected class to clicked option
+                this.classList.add('selected');
+
+                // Set section value
+                formData.section = this.getAttribute('data-section');
+            });
+        });
+
+        // Year selection
+        document.querySelectorAll('.year-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all year options
+                document.querySelectorAll('.year-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+
+                // Add selected class to clicked option
+                this.classList.add('selected');
+
+                // Set year value
+                formData.year = this.getAttribute('data-year');
+            });
+        });
+
+        // Accommodation selection
+        document.getElementById('hostelOption').addEventListener('click', function() {
+            formData.accommodation = 'hostel';
+            document.getElementById('hostelOption').classList.add('selected');
+            document.getElementById('dayScholarOption').classList.remove('selected');
+        });
+
+        document.getElementById('dayScholarOption').addEventListener('click', function() {
+            formData.accommodation = 'dayScholar';
+            document.getElementById('dayScholarOption').classList.add('selected');
+            document.getElementById('hostelOption').classList.remove('selected');
+        });
+
+        // Set default selections
+        document.getElementById('hostelOption').classList.add('selected');
+        document.querySelector('.year-option[data-year="1"]').classList.add('selected');
+        formData.year = "1";
+        document.querySelector('.option[data-section="A"]').classList.add('selected');
+        formData.section = "A";
+        document.querySelector('.option[data-dept="aiml"]').classList.add('selected');
+        formData.department = "aiml";
+
+        // Form submission
+        document.getElementById('submitBtn').addEventListener('click', function() {
+            const regNo = document.getElementById('regNo').value.trim();
+            if (regNo === "") {
+                alert("Please enter your registration number");
+                document.getElementById('regNo').focus();
+                return;
+            }
+            formData.regNo = regNo;
+
+            // Validate all fields
+            if (formData.name === "") {
+                alert("Please enter your name");
+                showField(1);
+                return;
+            }
+
+            if (formData.department === "") {
+                alert("Please select your department");
+                showField(2);
+                return;
+            }
+
+            if (formData.section === "") {
+                alert("Please select your section");
+                showField(3);
+                return;
+            }
+
+            if (formData.year === "") {
+                alert("Please select your year");
+                showField(4);
+                return;
+            }
+
+            // All fields are filled, submit the form
+            submitForm();
+        });
+
+        function submitForm() {
+            // Change background to blue
+            document.body.classList.add('blue-bg');
+
+            // Add timestamp to form data
+            const submissionData = {
+                ...formData,
+                id: Date.now(),
+                timestamp: new Date().toISOString(),
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString()
+            };
+
+            // Save to localStorage
+            allRegistrations.push(submissionData);
+            localStorage.setItem('studentRegistrations', JSON.stringify(allRegistrations));
+
+            // Prepare final details for thank you message
+            const deptNames = {
+                'aiml': 'AI & Machine Learning (AIML)',
+                'aids': 'AI & Data Science (AIDS)',
+                'cse-cyber': 'CSE - Cyber Security',
+                'ece': 'Electronics & Communication (ECE)',
+                'csbs': 'CS & Business Systems (CSBS)',
+                'eee': 'Electrical & Electronics (EEE)'
+            };
+
+            const yearNames = {
+                '1': 'First Year',
+                '2': 'Second Year',
+                '3': 'Third Year',
+                '4': 'Fourth Year'
+            };
+
+            const finalDetailsHTML = `
+                <h3><i class="fas fa-user-graduate"></i> Registration Details</h3>
+                <div class="detail-row">
+                    <div class="detail-label">Full Name:</div>
+                    <div class="detail-value">${formData.name}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Department:</div>
+                    <div class="detail-value">${deptNames[formData.department]}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Section:</div>
+                    <div class="detail-value">Section ${formData.section}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Year:</div>
+                    <div class="detail-value">${yearNames[formData.year]}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Accommodation:</div>
+                    <div class="detail-value">${formData.accommodation === 'hostel' ? 'Hostel Student' : 'Day Scholar'}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Registration No:</div>
+                    <div class="detail-value">${formData.regNo}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Submitted:</div>
+                    <div class="detail-value">${new Date().toLocaleString()}</div>
+                </div>
+            `;
+
+            document.getElementById('finalDetails').innerHTML = finalDetailsHTML;
+
+            // Show thank you message after a short delay
+            setTimeout(() => {
+                document.getElementById('thankYouMessage').style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+            }, 800);
+
+            // Log form data to console
+            console.log('Student Registration Submitted:', submissionData);
+        }
+
+        // Export functions
+        document.getElementById('exportCSV').addEventListener('click', function() {
+            exportToCSV();
+        });
+
+        document.getElementById('exportJSON').addEventListener('click', function() {
+            exportToJSON();
+        });
+
+        document.getElementById('exportTXT').addEventListener('click', function() {
+            exportToTXT();
+        });
+
+        function exportToCSV() {
+            const deptNames = {
+                'aiml': 'AI & Machine Learning',
+                'aids': 'AI & Data Science',
+                'cse-cyber': 'CSE - Cyber Security',
+                'ece': 'Electronics & Communication',
+                'csbs': 'CS & Business Systems',
+                'eee': 'Electrical & Electronics'
+            };
+
+            const yearNames = {
+                '1': 'First Year',
+                '2': 'Second Year',
+                '3': 'Third Year',
+                '4': 'Fourth Year'
+            };
+
+            // Create CSV headers
+            let csvContent = "Name,Registration No,Department,Section,Year,Accommodation,Date,Time\n";
+
+            // Add current registration
+            csvContent += `"${formData.name}","${formData.regNo}","${deptNames[formData.department]}","${formData.section}","${yearNames[formData.year]}","${formData.accommodation === 'hostel' ? 'Hostel' : 'Day Scholar'}","${new Date().toLocaleDateString()}","${new Date().toLocaleTimeString()}"\n`;
+
+            // Add all previous registrations
+            allRegistrations.forEach(reg => {
+                csvContent += `"${reg.name}","${reg.regNo}","${deptNames[reg.department]}","${reg.section}","${yearNames[reg.year]}","${reg.accommodation === 'hostel' ? 'Hostel' : 'Day Scholar'}","${reg.date}","${reg.time}"\n`;
+            });
+
+            // Create download link
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `student_registrations_${new Date().getTime()}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            alert('CSV file downloaded successfully!');
+        }
+
+        function exportToJSON() {
+            const deptNames = {
+                'aiml': 'AI & Machine Learning',
+                'aids': 'AI & Data Science',
+                'cse-cyber': 'CSE - Cyber Security',
+                'ece': 'Electronics & Communication',
+                'csbs': 'CS & Business Systems',
+                'eee': 'Electrical & Electronics'
+            };
+
+            const yearNames = {
+                '1': 'First Year',
+                '2': 'Second Year',
+                '3': 'Third Year',
+                '4': 'Fourth Year'
+            };
+
+            // Prepare data for export
+            const exportData = {
+                exportDate: new Date().toISOString(),
+                totalRegistrations: allRegistrations.length + 1,
+                currentRegistration: {
+                    ...formData,
+                    department: deptNames[formData.department],
+                    year: yearNames[formData.year],
+                    accommodation: formData.accommodation === 'hostel' ? 'Hostel Student' : 'Day Scholar',
+                    timestamp: new Date().toISOString()
+                },
+                allRegistrations: allRegistrations.map(reg => ({
+                    ...reg,
+                    department: deptNames[reg.department],
+                    year: yearNames[reg.year],
+                    accommodation: reg.accommodation === 'hostel' ? 'Hostel Student' : 'Day Scholar'
+                }))
+            };
+
+            // Create download link
+            const jsonString = JSON.stringify(exportData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `student_registrations_${new Date().getTime()}.json`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            alert('JSON file downloaded successfully!');
+        }
+
+        function exportToTXT() {
+            const deptNames = {
+                'aiml': 'AI & Machine Learning',
+                'aids': 'AI & Data Science',
+                'cse-cyber': 'CSE - Cyber Security',
+                'ece': 'Electronics & Communication',
+                'csbs': 'CS & Business Systems',
+                'eee': 'Electrical & Electronics'
+            };
+
+            const yearNames = {
+                '1': 'First Year',
+                '2': 'Second Year',
+                '3': 'Third Year',
+                '4': 'Fourth Year'
+            };
+
+            // Create text content
+            let txtContent = "STUDENT REGISTRATION DATA\n";
+            txtContent += "==========================\n\n";
+            txtContent += `Export Date: ${new Date().toLocaleString()}\n`;
+            txtContent += `Total Registrations: ${allRegistrations.length + 1}\n\n`;
+
+            txtContent += "CURRENT REGISTRATION:\n";
+            txtContent += "---------------------\n";
+            txtContent += `Name: ${formData.name}\n`;
+            txtContent += `Registration No: ${formData.regNo}\n`;
+            txtContent += `Department: ${deptNames[formData.department]}\n`;
+            txtContent += `Section: ${formData.section}\n`;
+            txtContent += `Year: ${yearNames[formData.year]}\n`;
+            txtContent += `Accommodation: ${formData.accommodation === 'hostel' ? 'Hostel Student' : 'Day Scholar'}\n`;
+            txtContent += `Date: ${new Date().toLocaleDateString()}\n`;
+            txtContent += `Time: ${new Date().toLocaleTimeString()}\n\n`;
+
+            if (allRegistrations.length > 0) {
+                txtContent += "PREVIOUS REGISTRATIONS:\n";
+                txtContent += "------------------------\n";
+
+                allRegistrations.forEach((reg, index) => {
+                    txtContent += `\nRegistration ${index + 1}:\n`;
+                    txtContent += `Name: ${reg.name}\n`;
+                    txtContent += `Registration No: ${reg.regNo}\n`;
+                    txtContent += `Department: ${deptNames[reg.department]}\n`;
+                    txtContent += `Section: ${reg.section}\n`;
+                    txtContent += `Year: ${yearNames[reg.year]}\n`;
+                    txtContent += `Accommodation: ${reg.accommodation === 'hostel' ? 'Hostel Student' : 'Day Scholar'}\n`;
+                    txtContent += `Date: ${reg.date}\n`;
+                    txtContent += `Time: ${reg.time}\n`;
+                });
+            }
+
+            // Create download link
+            const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `student_registrations_${new Date().getTime()}.txt`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            alert('TXT file downloaded successfully!');
+        }
+
+        // Close thank you message
+        document.getElementById('closeBtn').addEventListener('click', function() {
+            document.getElementById('thankYouMessage').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+
+            // Reset form
+            resetForm();
+
+            // Show history section
+            document.getElementById('historySection').style.display = 'block';
+
+            // Update history display
+            updateHistory();
+        });
+
+        // Close thank you message when clicking overlay
+        document.getElementById('overlay').addEventListener('click', function() {
+            document.getElementById('thankYouMessage').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+
+            // Reset form
+            resetForm();
+        });
+
+        function resetForm() {
+            // Reset form data
+            formData.name = "";
+            formData.department = "aiml";
+            formData.section = "A";
+            formData.year = "1";
+            formData.accommodation = "hostel";
+            formData.regNo = "";
+
+            // Reset form fields
+            document.getElementById('name').value = "";
+            document.getElementById('regNo').value = "";
+
+            // Reset selections
+            document.querySelectorAll('.option[data-dept]').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            document.querySelector('.option[data-dept="aiml"]').classList.add('selected');
+
+            document.querySelectorAll('.option[data-section]').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            document.querySelector('.option[data-section="A"]').classList.add('selected');
+
+            document.querySelectorAll('.year-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            document.querySelector('.year-option[data-year="1"]').classList.add('selected');
+
+            document.getElementById('hostelOption').classList.add('selected');
+            document.getElementById('dayScholarOption').classList.remove('selected');
+
+            // Go back to first field
+            showField(1);
+
+            // Remove blue background
+            document.body.classList.remove('blue-bg');
+        }
+
+        // Update history display
+        function updateHistory() {
+            const historyContent = document.getElementById('historyContent');
+
+            if (allRegistrations.length === 0) {
+                historyContent.innerHTML = '<div class="empty-history">No registrations yet. Submit your first registration to see it here.</div>';
+                return;
+            }
+
+            const deptNames = {
+                'aiml': 'AIML',
+                'aids': 'AIDS',
+                'cse-cyber': 'CSE Cyber',
+                'ece': 'ECE',
+                'csbs': 'CSBS',
+                'eee': 'EEE'
+            };
+
+            const yearNames = {
+                '1': '1st',
+                '2': '2nd',
+                '3': '3rd',
+                '4': '4th'
+            };
+
+            let tableHTML = `
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Name</th>
+                            <th>Reg No</th>
+                            <th>Dept</th>
+                            <th>Section</th>
+                            <th>Year</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            // Show latest 5 registrations
+            const recentRegistrations = [...allRegistrations].reverse().slice(0, 5);
+
+            recentRegistrations.forEach((reg, index) => {
+                tableHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${reg.name}</td>
+                        <td>${reg.regNo}</td>
+                        <td>${deptNames[reg.department]}</td>
+                        <td>${reg.section}</td>
+                        <td>${yearNames[reg.year]}</td>
+                        <td>${reg.accommodation === 'hostel' ? 'Hostel' : 'Day'}</td>
+                        <td>${reg.date}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+                <div style="margin-top: 10px; font-size: 14px; color: #666; text-align: center;">
+                    Showing ${recentRegistrations.length} of ${allRegistrations.length} registrations
+                </div>
+            `;
+
+            historyContent.innerHTML = tableHTML;
+        }
+
+        // Allow Enter key to move to next field
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                if (currentField === 1) {
+                    document.getElementById('nextBtn1').click();
+                } else if (currentField === 2 && formData.department !== "") {
+                    document.getElementById('nextBtn2').click();
+                } else if (currentField === 3 && formData.section !== "") {
+                    document.getElementById('nextBtn3').click();
+                } else if (currentField === 4 && formData.year !== "") {
+                    document.getElementById('nextBtn4').click();
+                } else if (currentField === 5 && formData.accommodation !== "") {
+                    document.getElementById('nextBtn5').click();
+                } else if (currentField === 6) {
+                    const regNo = document.getElementById('regNo').value.trim();
+                    if (regNo !== "") {
+                        document.getElementById('submitBtn').click();
+                    }
+                }
+            }
+        });
+
+        // Update previous button visibility on load
+        updatePreviousButton();
+
+        // Clear all data button (for testing)
+        function clearAllData() {
+            if (confirm("Are you sure you want to clear all registration data?")) {
+                localStorage.removeItem('studentRegistrations');
+                allRegistrations = [];
+                updateHistory();
+                alert("All registration data has been cleared.");
+            }
+        }
+
+        // Add clear data button to footer for testing
+        const footer = document.querySelector('.footer');
+        const clearBtn = document.createElement('button');
+        clearBtn.innerHTML = '<i class="fas fa-trash"></i> Clear All Data';
+        clearBtn.style.cssText = 'background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 5px; margin-top: 10px; cursor: pointer; font-size: 12px;';
+        clearBtn.onclick = clearAllData;
+        footer.appendChild(clearBtn);
+    </script>
+</body>
+</html>
