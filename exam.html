@@ -1,0 +1,607 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Online Examination</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            /* Paper texture background */
+            background-color: #fdfbf7;
+            background-image: url("https://www.transparenttextures.com/patterns/notebook.png");
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+
+        /* Pencil decoration */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://img.freepik.com/free-photo/pencil-paper-background_1150-3625.jpg'); /* Fallback or specific image if available, using a generic paper feel for now via CSS above */
+            background-size: cover;
+            background-position: center;
+            opacity: 0.1;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 20px;
+        }
+
+        /* Google Form Style Cards */
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-top: 10px solid #673ab7; /* Google Forms Purple */
+            padding: 30px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .card-header {
+            margin-bottom: 20px;
+        }
+
+        .card-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #202124;
+        }
+
+        .card-header p {
+            font-size: 14px;
+            color: #5f6368;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #202124;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 0;
+            border: none;
+            border-bottom: 1px solid #dadce0;
+            font-size: 14px;
+            outline: none;
+            transition: border-bottom 0.3s;
+            background: transparent;
+        }
+
+        .form-input:focus {
+            border-bottom: 2px solid #673ab7;
+        }
+
+        .btn {
+            background-color: #673ab7;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #5e35b1;
+        }
+
+        /* Exam Section Styles */
+        .question-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            padding: 24px;
+            margin-bottom: 15px;
+            border-left: 5px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .question-card:hover {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        .question-card.active {
+            border-left-color: #4285f4;
+        }
+
+        .question-text {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #202124;
+        }
+
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 14px;
+            color: #202124;
+        }
+
+        .option-radio {
+            margin-right: 10px;
+            accent-color: #673ab7;
+            transform: scale(1.2);
+        }
+
+        /* Timer */
+        .timer-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #202124;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        .timer-warning {
+            background-color: #d93025;
+        }
+
+        /* Result Styles */
+        .score-card {
+            text-align: center;
+            border-top: 10px solid #0f9d58;
+        }
+
+        .score-display {
+            font-size: 48px;
+            font-weight: bold;
+            color: #0f9d58;
+            margin: 20px 0;
+        }
+
+        .result-detail {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .correct-answer {
+            background-color: #e6f4ea;
+            color: #137333;
+            border: 1px solid #ceead6;
+        }
+
+        .wrong-answer {
+            background-color: #fce8e6;
+            color: #c5221f;
+            border: 1px solid #fad2cf;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .status-correct {
+            background-color: #e6f4ea;
+            color: #137333;
+        }
+
+        .status-wrong {
+            background-color: #fce8e6;
+            color: #c5221f;
+        }
+
+        .status-unanswered {
+            background-color: #f1f3f4;
+            color: #5f6368;
+        }
+
+        /* Sections Visibility */
+        #examSection, #resultSection {
+            display: none;
+        }
+
+        .info-bar {
+            background: #e8f0fe;
+            color: #1967d2;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Timer -->
+    <div id="timerBar" class="timer-bar">
+        Time Remaining: <span id="timer">30:00</span>
+    </div>
+
+    <div class="container">
+        <!-- Login Section -->
+        <div id="loginSection">
+            <div class="card">
+                <div class="card-header">
+                    <h1>Python Basics Examination</h1>
+                    <p><strong>Instructions:</strong><br>
+                    • Total Questions: 15<br>
+                    • Time Limit: 30 Minutes<br>
+                    • Correct Answer: +5 Marks<br>
+                    • Incorrect Answer: -1 Mark<br>
+                    • Unanswered: 0 Marks</p>
+                </div>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" id="studentName" placeholder="Your answer" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Registration Number</label>
+                        <input type="text" class="form-input" id="regNo" placeholder="Your answer" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Class</label>
+                        <input type="text" class="form-input" id="studentClass" placeholder="Your answer" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Section</label>
+                        <input type="text" class="form-input" id="studentSection" placeholder="Your answer" required>
+                    </div>
+                    <button type="submit" class="btn">Start Exam</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Exam Section -->
+        <div id="examSection">
+            <div class="card">
+                <div class="card-header">
+                    <h1>Python Basics Examination</h1>
+                    <div class="info-bar">
+                        <span id="displayStudentName">Student: </span>
+                        <span id="displayRegNo">Reg No: </span>
+                    </div>
+                    <p style="color: #d93025;">* Required</p>
+                </div>
+            </div>
+
+            <form id="examForm">
+                <!-- Questions will be injected here by JS -->
+                <div id="questionsContainer"></div>
+
+                <div class="card">
+                    <button type="submit" class="btn">Submit Examination</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultSection">
+            <div class="card score-card">
+                <div class="card-header">
+                    <h1>Examination Result</h1>
+                    <p>Thank you for completing the exam.</p>
+                </div>
+                <div class="score-display">
+                    <span id="finalScore">0</span> / 75
+                </div>
+                <div id="studentDetailsResult" style="margin-bottom: 20px; color: #5f6368;"></div>
+                <button class="btn" onclick="window.print()">Print Result</button>
+            </div>
+
+            <div id="answersReview">
+                <!-- Review will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Exam Data
+        const questions = [
+            {
+                id: 1,
+                question: "What is the output of print(2 ** 3)?",
+                options: ["6", "8", "9", "Error"],
+                correct: "8"
+            },
+            {
+                id: 2,
+                question: "Which keyword is used to define a function in Python?",
+                options: ["function", "def", "define", "func"],
+                correct: "def"
+            },
+            {
+                id: 3,
+                question: "Which of the following is a mutable data type?",
+                options: ["Tuple", "String", "List", "Integer"],
+                correct: "List"
+            },
+            {
+                id: 4,
+                question: "Which character is used for single-line comments in Python?",
+                options: ["//", "/*", "#", "--"],
+                correct: "#"
+            },
+            {
+                id: 5,
+                question: "What is the output of type(5.0)?",
+                options: ["<class 'int'>", "<class 'float'>", "<class 'double'>", "<class 'decimal'>"],
+                correct: "<class 'float'>"
+            },
+            {
+                id: 6,
+                question: "What is the correct file extension for Python files?",
+                options: [".pt", ".pyt", ".py", ".python"],
+                correct: ".py"
+            },
+            {
+                id: 7,
+                question: "Which of these are Boolean values in Python?",
+                options: ["true, false", "True, False", "1, 0", "yes, no"],
+                correct: "True, False"
+            },
+            {
+                id: 8,
+                question: "Which operator is used for float division?",
+                options: ["/", "//", "%", "#"],
+                correct: "/"
+            },
+            {
+                id: 9,
+                question: "What is the index of the first element in a list?",
+                options: ["1", "0", "-1", "None"],
+                correct: "0"
+            },
+            {
+                id: 10,
+                question: "Which method converts a string to uppercase?",
+                options: ["uppercase()", "toUpper()", "upper()", "cap()"],
+                correct: "upper()"
+            },
+            {
+                id: 11,
+                question: "Which of the following is a loop in Python?",
+                options: ["for", "loop", "do-while", "repeat"],
+                correct: "for"
+            },
+            {
+                id: 12,
+                question: "How do you create a dictionary in Python?",
+                options: ["[]", "()", "{}", "<>"],
+                correct: "{}"
+            },
+            {
+                id: 13,
+                question: "What is the output of len('Hello')?",
+                options: ["4", "5", "6", "Error"],
+                correct: "5"
+            },
+            {
+                id: 14,
+                question: "Which logical operator returns True if both statements are true?",
+                options: ["or", "not", "and", "xor"],
+                correct: "and"
+            },
+            {
+                id: 15,
+                question: "Which of the following is an invalid variable name?",
+                options: ["my_var", "_var", "var1", "1var"],
+                correct: "1var"
+            }
+        ];
+
+        // State
+        let timerInterval;
+        let timeLeft = 30 * 60; // 30 minutes in seconds
+
+        // DOM Elements
+        const loginSection = document.getElementById('loginSection');
+        const examSection = document.getElementById('examSection');
+        const resultSection = document.getElementById('resultSection');
+        const loginForm = document.getElementById('loginForm');
+        const examForm = document.getElementById('examForm');
+        const questionsContainer = document.getElementById('questionsContainer');
+        const timerBar = document.getElementById('timerBar');
+        const timerDisplay = document.getElementById('timer');
+
+        // Initialize
+        function init() {
+            renderQuestions();
+        }
+
+        // Render Questions
+        function renderQuestions() {
+            questionsContainer.innerHTML = questions.map((q, index) => `
+                <div class="question-card" onclick="this.classList.add('active')">
+                    <div class="question-text">
+                        <strong>Q${index + 1}.</strong> ${q.question} <span style="color: #d93025;">*</span>
+                    </div>
+                    <div class="options-group">
+                        ${q.options.map(opt => `
+                            <label class="option-label">
+                                <input type="radio" name="q${q.id}" value="${opt}" class="option-radio" required>
+                                ${opt}
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Start Exam
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('studentName').value;
+            const regNo = document.getElementById('regNo').value;
+            const sClass = document.getElementById('studentClass').value;
+            const section = document.getElementById('studentSection').value;
+
+            if(name && regNo && sClass && section) {
+                // Update Info
+                document.getElementById('displayStudentName').textContent = `Student: ${name}`;
+                document.getElementById('displayRegNo').textContent = `Reg No: ${regNo}`;
+
+                // Switch View
+                loginSection.style.display = 'none';
+                examSection.style.display = 'block';
+                timerBar.style.display = 'block';
+
+                // Start Timer
+                startTimer();
+                window.scrollTo(0, 0);
+            }
+        });
+
+        // Timer Logic
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 300) { // Last 5 minutes
+                    timerBar.classList.add('timer-warning');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        // Submit Exam
+        examForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if(confirm("Are you sure you want to submit the exam?")) {
+                submitExam();
+            }
+        });
+
+        function submitExam() {
+            clearInterval(timerInterval);
+            timerBar.style.display = 'none';
+
+            // Calculate Score
+            let score = 0;
+            const formData = new FormData(examForm);
+            const userAnswers = {};
+
+            questions.forEach(q => {
+                const selected = formData.get(`q${q.id}`);
+                userAnswers[q.id] = selected;
+
+                if (selected === q.correct) {
+                    score += 5;
+                } else if (selected) { // Answered but wrong
+                    score -= 1;
+                }
+                // Unanswered = 0
+            });
+
+            // Show Results
+            showResults(score, userAnswers);
+        }
+
+        function showResults(score, userAnswers) {
+            examSection.style.display = 'none';
+            resultSection.style.display = 'block';
+
+            document.getElementById('finalScore').textContent = score;
+
+            const name = document.getElementById('studentName').value;
+            const regNo = document.getElementById('regNo').value;
+            const sClass = document.getElementById('studentClass').value;
+            const section = document.getElementById('studentSection').value;
+
+            document.getElementById('studentDetailsResult').innerHTML = `
+                <p><strong>Name:</strong> ${name} | <strong>Reg No:</strong> ${regNo}</p>
+                <p><strong>Class:</strong> ${sClass} | <strong>Section:</strong> ${section}</p>
+            `;
+
+            // Generate Review
+            const reviewContainer = document.getElementById('answersReview');
+            reviewContainer.innerHTML = questions.map((q, index) => {
+                const selected = userAnswers[q.id];
+                const isCorrect = selected === q.correct;
+                const isUnanswered = !selected;
+
+                let statusClass = isCorrect ? 'status-correct' : (isUnanswered ? 'status-unanswered' : 'status-wrong');
+                let statusText = isCorrect ? 'Correct (+5)' : (isUnanswered ? 'Unanswered (0)' : 'Incorrect (-1)');
+
+                let cardBorder = isCorrect ? 'border-left: 5px solid #137333;' : (isUnanswered ? 'border-left: 5px solid #5f6368;' : 'border-left: 5px solid #c5221f;');
+
+                return `
+                    <div class="card" style="${cardBorder}">
+                        <div class="question-text">
+                            <strong>Q${index + 1}.</strong> ${q.question}
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="result-detail ${isCorrect ? 'correct-answer' : 'wrong-answer'}">
+                            <p><strong>Your Answer:</strong> ${selected || 'Not Answered'}</p>
+                        </div>
+                        ${!isCorrect ? `
+                            <div class="result-detail correct-answer" style="margin-top: 5px;">
+                                <p><strong>Correct Answer:</strong> ${q.correct}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            window.scrollTo(0, 0);
+        }
+
+        // Run Init
+        init();
+    </script>
+</body>
+</html>
